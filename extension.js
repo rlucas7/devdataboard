@@ -21,7 +21,7 @@ function activate(context) {
 		// The code you place here will be executed every time your command is executed
 
 		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from ext-learn1!');
+		vscode.window.showInformationMessage('Hello Lucas from ext-learn1!');
 	});
 
 	context.subscriptions.push(disposable);

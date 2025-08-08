@@ -14,7 +14,7 @@
   "contributes": {
     "commands": [{
       "command": "ext-learn1.helloWorld",
-      "title": "Hello World"
+      "title": "Hello Lucas"
     }]
   },
   "scripts": {
