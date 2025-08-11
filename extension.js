@@ -67,10 +67,10 @@ function activate(context) {
             // Create a new panel
             const panel = vscode.window.createWebviewPanel(
                 'barChartPanel',
-                'My Bar Chart',
+                'Dev Data Dashboard',
                 vscode.ViewColumn.One,
                 {
-                    enableScripts: true // Allow scripts in the webview
+                    enableScripts: true // Allow scripts in the webview, not allowed by default ...
                 }
             );
             const config = {
