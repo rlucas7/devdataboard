@@ -39,7 +39,10 @@ function activate(context) {
     let rejectCnt = 0;
 	const disposable = vscode.commands.registerCommand('ext-learn1.helloWorld', function () {
 		// Read the dev_data file using vscode.workspace.fs
-        const uri = vscode.Uri.file('/Users/rlucas7/.continue/dev_data/0.2.0/autocomplete.jsonl'); // Absolute path to the file
+        const HOME = process.env.HOME || process.env.USERPROFILE; // For cross-platform compatibility
+        // Construct the path to the file
+        const uri = vscode.Uri.file(`${HOME}/.continue/dev_data/0.2.0/autocomplete.jsonl`); // Absolute path to the file
+        console.log('Reading file at:', uri.fsPath);
         // this part seems to only read the last line of the file
 		let autoCompletes = []
 		vscode.workspace.fs.readFile(uri).then(content => {
