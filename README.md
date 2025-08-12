@@ -53,7 +53,11 @@ now you should see a file called
 where the version number inside the `<>` corresponds to your local
 setting in package.json.
 
-Now to run the `.vsix` local build do:
+The installation can now proceed as shown in the video 
+
+
+
+https://github.com/user-attachments/assets/c5508224-bd8e-4ba4-b414-247032a1903f
 
 
 
