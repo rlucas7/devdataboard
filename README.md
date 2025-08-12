@@ -1,24 +1,26 @@
-# ext-learn1 README
+# Dev Data Dashboard README
 
-This is the README for your extension "ext-learn1". After writing up a brief description, we recommend including the following sections.
+This is the README for the extension "Dev Data Dashboard".
+
+The intent of this extension is to allow monitoring and visualizing
+important software metrics using AI tools with `Continue.dev`.
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+Accepted Autocompletions rate:
+ - The autocompletions from the continue extesion are
+   tracked and rendered in the dashboard.
 
-For example if there is an image subfolder under your extension project workspace:
-
-\!\[feature X\]\(images/feature-x.png\)
-
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
 
 ## Requirements
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+See `package.json` for runtime dependency and dev-dependency info.
 
 ## Extension Settings
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+So far there are so changes to VS Code settings through the
+ `contributes.configuration` extension point. In the future
+ we might have use of these.
 
 For example:
 
@@ -29,33 +31,19 @@ This extension contributes the following settings:
 
 ## Known Issues
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+For now this only uses the `dev_data/0.2.0/autocompletions.jsonl` file.
+I run a mac air so testing is primarily on mac. If run ubuntu or other
+*nix or windows and you see any issues please open an issue which details
+what is not working.
 
 ## Release Notes
 
-Users appreciate release notes as you update your extension.
+The first release has not be done yet.
+This is development toward a `0.1.0` version.
 
-### 1.0.0
+### 0.1.0
 
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
----
-
-## Working with Markdown
-
-You can author your README using Visual Studio Code.  Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux)
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux)
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets
+- Accepted/rejected count of autocompletes.
 
 ## For more information
 
