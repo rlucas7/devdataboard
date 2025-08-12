@@ -1,5 +1,5 @@
 {
-  "name": "Dev Data Databoard",
+  "name": "devdataboard",
   "displayName": "Dev Data Dashboard",
   "description": "A project to Render a dashboard of dev data metrics from Continue.dev",
   "version": "0.1.0",

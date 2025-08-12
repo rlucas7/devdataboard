@@ -36,6 +36,18 @@ I run a mac air so testing is primarily on mac. If run ubuntu or other
 *nix or windows and you see any issues please open an issue which details
 what is not working.
 
+## Packaged Install
+
+The vscode extension is not released onto the VSCode marketplace
+currently. To install the tip if `MAIN` do:
+
+NOTE: if `vsce` is not installed already you can do
+`npm install -g @vscode/vsce` to install globally.
+
+```bash
+vsce package 
+```
+
 ## Release Notes
 
 The first release has not be done yet.
