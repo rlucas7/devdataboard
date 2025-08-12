@@ -1,8 +1,8 @@
 {
-  "name": "ext-learn1",
-  "displayName": "ext-learn1",
-  "description": "A project to learn vscode extensions",
-  "version": "0.0.1",
+  "name": "Dev Data Databoard",
+  "displayName": "Dev Data Dashboard",
+  "description": "A project to Render a dashboard of dev data metrics from Continue.dev",
+  "version": "0.1.0",
   "engines": {
     "vscode": "^1.103.0"
   },
@@ -13,8 +13,8 @@
   "main": "./extension.js",
   "contributes": {
     "commands": [{
-      "command": "ext-learn1.helloWorld",
-      "title": "Hello Lucas"
+      "command": "devDataDash.RenderDashboard",
+      "title": "DevDataDashboard"
     }]
   },
   "scripts": {
