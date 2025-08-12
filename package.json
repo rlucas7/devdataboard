@@ -29,5 +29,18 @@
     "eslint": "^9.32.0",
     "@vscode/test-cli": "^0.0.11",
     "@vscode/test-electron": "^2.5.2"
-  }
+  },
+  "extensionDependencies": [
+    "continue.dev.continue-dev"
+  ],
+  "license": "SEE LICENSE IN LICENSE.txt",
+  "bugs": {
+    "url": "https://github.com/rlucas7/devDataDashboard/issues",
+    "email": "rlucas7@vt.edu"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rlucas7/devDataDashboard.git"
+  },
+  "homepage": "https://github.com/rlucas7/devDataDashboard/blob/main/README.md"
 }
