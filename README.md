@@ -39,14 +39,23 @@ what is not working.
 ## Packaged Install
 
 The vscode extension is not released onto the VSCode marketplace
-currently. To install the tip if `MAIN` do:
-
-NOTE: if `vsce` is not installed already you can do
+currently. If `vsce` is not installed already you can do
 `npm install -g @vscode/vsce` to install globally.
+To install the tip of `MAIN` navigate to the top level directory
+you have cloned from git remote. Then do:
 
 ```bash
 vsce package 
 ```
+now you should see a file called
+
+`devdataboard-<major.minor.bugfix>.vsix`
+where the version number inside the `<>` corresponds to your local
+setting in package.json.
+
+Now to run the `.vsix` local build do:
+
+
 
 ## Release Notes
 

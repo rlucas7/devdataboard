@@ -13,7 +13,7 @@
   "main": "./extension.js",
   "contributes": {
     "commands": [{
-      "command": "devDataDash.RenderDashboard",
+      "command": "devdatadash.dashboard",
       "title": "DevDataDashboard"
     }]
   },
@@ -31,7 +31,7 @@
     "@vscode/test-electron": "^2.5.2"
   },
   "extensionDependencies": [
-    "continue.dev.continue-dev"
+    "continue.continue"
   ],
   "license": "SEE LICENSE IN LICENSE.txt",
   "bugs": {

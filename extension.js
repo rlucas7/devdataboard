@@ -37,7 +37,7 @@ function activate(context) {
 	// The commandId parameter must match the command field in package.json
     let acceptCnt = 0;
     let rejectCnt = 0;
-	const disposable = vscode.commands.registerCommand('devDataDash.RenderDashboard', function () {
+	const disposable = vscode.commands.registerCommand('devdatadash.dashboard', function () {
 		// Read the dev_data file using vscode.workspace.fs
         const HOME = process.env.HOME || process.env.USERPROFILE; // For cross-platform compatibility
         // Construct the path to the file
