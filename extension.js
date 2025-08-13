@@ -6,7 +6,7 @@ const posix = require('path').posix;
 // Your extension is activated the very first time the command is executed
 
 // some helper function
-var getWebviewContent = function(barChartConfig, tsChartConfig){
+var getWebviewContent = function(barChartConfig, tsAcceptChartConfig, tsRejectChartConfig) {
     return `<!DOCTYPE html>
     <html lang="en">
     <head>
@@ -22,8 +22,10 @@ var getWebviewContent = function(barChartConfig, tsChartConfig){
             <canvas id="barchart"></canvas>
         </div>
         <div>
-            <p>Time Plot</p>
-            <canvas id="timeplot"></canvas>
+            <canvas id="accepted-timeplot"></canvas>
+        </div>
+        <div>
+            <canvas id="rejected-timeplot"></canvas>
         </div>
         <script>
             // Bar Chart
@@ -31,10 +33,14 @@ var getWebviewContent = function(barChartConfig, tsChartConfig){
                 document.getElementById('barchart').getContext('2d'),
                 ${JSON.stringify(barChartConfig)}
             );
-            // Time Plot
-            const timeChart = new Chart(
-                document.getElementById('timeplot'),
-                ${JSON.stringify(tsChartConfig)}
+            // Time Plots
+            const AcceptedTimeChart = new Chart(
+                document.getElementById('accepted-timeplot'),
+                ${JSON.stringify(tsAcceptChartConfig)}
+            );
+            const RejectedTimeChart = new Chart(
+                document.getElementById('rejected-timeplot'),
+                ${JSON.stringify(tsRejectChartConfig)}
             );
         </script>
     </body>
@@ -76,7 +82,7 @@ function activate(context) {
 							rejectCnt++;
 						}
 					} catch (error) {
-						console.error('Error parsing JSON:', error);
+						console.error(`Error parsing entry JSON: ${error}`);
 					}
 				}
 			});
@@ -134,23 +140,32 @@ function activate(context) {
                     }
                 }
             };
-            const tsData = {
-                    datasets: [{
-                        label: 'Auto-complete length',
-                        // TODO: replace with real data
-                        data: [
-                            { x: '2023-01-01', y: 10 },
-                            { x: '2023-01-02', y: 12 },
-                            { x: '2023-01-03', y: 8 },
-                            { x: '2023-01-04', y: 15 }
-                        ],
-                        borderColor: 'blue',
-                        backgroundColor: 'yellow'
+            // Time series plot of accepted auto-completes over time
+            let acceptedCompletes = autoCompletes.filter(ac => ac.accepted);
+            let acceptedPlotData = acceptedCompletes.map(ac => ({x: ac.timestamp, y: ac.completion.length}));
+            // Time series data of rejected auto-completes over time
+            let rejectedCompletes = autoCompletes.filter(ac => !ac.accepted);
+            let rejectedPlotData = rejectedCompletes.map(ac => ({x: ac.timestamp, y : ac.completion.length}));
+            const tsAcceptData = {
+                datasets: [{
+                    label: 'Accepted Auto-complete length',
+                    // TODO: replace with real data
+                    data: [...acceptedPlotData],
+                    borderColor: 'blue',
+                    backgroundColor: 'yellow'
                 }]
             };
-            const tsConfig = {
+            const tsRejectData = {
+                datasets: [{
+                    label: 'Rejected Auto-complete length',
+                    data: [...rejectedPlotData],
+                    borderColor: 'red',
+                    backgroundColor: 'orange'
+                }]
+            };
+            const tsAConfig = {
               type: 'line',
-              data: tsData,
+              data: tsAcceptData,
               options: {
                 responsive: true,
                 plugins: {
@@ -164,11 +179,25 @@ function activate(context) {
                 }
               },
             };
-            //configs.push(tsConfig);
-            console.log('configs:', tsConfig);
+            const tsRConfig = {
+              type: 'line',
+              data: tsRejectData,
+              options: {
+                responsive: true,
+                plugins: {
+                  legend: {
+                    position: 'top',
+                  },
+                  title: {
+                    display: true,
+                    text: 'Time Series'
+                  }
+                }
+              },
+            };
             console.log('Auto-completes:', autoCompletes.length);
 			console.log(`Accepted/Rejected counts, ${acceptCnt} / ${rejectCnt}`);
-            panel.webview.html = getWebviewContent(config, tsConfig);
+            panel.webview.html = getWebviewContent(config, tsAConfig, tsRConfig);
         }).catch(err => {console.error('Error reading file:', err)});
     // Display a message box to the user
 	vscode.window.showInformationMessage('Rendering Dev Data Dashboard!');
