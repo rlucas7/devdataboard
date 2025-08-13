@@ -6,7 +6,8 @@ const posix = require('path').posix;
 // Your extension is activated the very first time the command is executed
 
 // some helper function
-var getWebviewContent = (chartConfig) => `<!DOCTYPE html>
+var getWebviewContent = function(barChartConfig, tsChartConfig){
+    return `<!DOCTYPE html>
     <html lang="en">
     <head>
         <meta charset="UTF-8">
@@ -15,14 +16,30 @@ var getWebviewContent = (chartConfig) => `<!DOCTYPE html>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     </head>
     <body>
-        <canvas id="ARBar"></canvas>
+        <h1>Dev Data Dashboard</h1>
+        <div>
+            <p>Bar Chart</p>
+            <canvas id="barchart"></canvas>
+        </div>
+        <div>
+            <p>Time Plot</p>
+            <canvas id="timeplot"></canvas>
+        </div>
         <script>
-            const ctx = document.getElementById('ARBar');
-            new Chart(ctx, ${JSON.stringify(chartConfig)}
+            // Bar Chart
+            const barChart = new Chart(
+                document.getElementById('barchart').getContext('2d'),
+                ${JSON.stringify(barChartConfig)}
+            );
+            // Time Plot
+            const timeChart = new Chart(
+                document.getElementById('timeplot'),
+                ${JSON.stringify(tsChartConfig)}
             );
         </script>
     </body>
     </html>`
+};
 
 /**
  * @param {vscode.ExtensionContext} context
@@ -66,7 +83,7 @@ function activate(context) {
 			// testing this confirms the file is read correctly with multiple lines...
             // Create a new panel
             const panel = vscode.window.createWebviewPanel(
-                'barChartPanel',
+                'DashBoardPanel',
                 'Dev Data Dashboard',
                 vscode.ViewColumn.One,
                 {
@@ -117,15 +134,48 @@ function activate(context) {
                     }
                 }
             };
+            const tsData = {
+                    datasets: [{
+                        label: 'Auto-complete length',
+                        // TODO: replace with real data
+                        data: [
+                            { x: '2023-01-01', y: 10 },
+                            { x: '2023-01-02', y: 12 },
+                            { x: '2023-01-03', y: 8 },
+                            { x: '2023-01-04', y: 15 }
+                        ],
+                        borderColor: 'blue',
+                        backgroundColor: 'yellow'
+                }]
+            };
+            const tsConfig = {
+              type: 'line',
+              data: tsData,
+              options: {
+                responsive: true,
+                plugins: {
+                  legend: {
+                    position: 'top',
+                  },
+                  title: {
+                    display: true,
+                    text: 'Time Series'
+                  }
+                }
+              },
+            };
+            //configs.push(tsConfig);
+            console.log('configs:', tsConfig);
             console.log('Auto-completes:', autoCompletes.length);
 			console.log(`Accepted/Rejected counts, ${acceptCnt} / ${rejectCnt}`);
-            panel.webview.html = getWebviewContent(config);
+            panel.webview.html = getWebviewContent(config, tsConfig);
         }).catch(err => {console.error('Error reading file:', err)});
     // Display a message box to the user
 	vscode.window.showInformationMessage('Rendering Dev Data Dashboard!');
     });
+    // Add to the context subscriptions
+    context.subscriptions.push(disposable);
 }
-
 // This method is called when your extension is deactivated
 function deactivate() {}
 
