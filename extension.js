@@ -31,7 +31,7 @@ function activate(context) {
 
 	// Use the console to output diagnostic information (console.log) and errors (console.error)
 	// This line of code will only be executed once when your extension is activated
-	console.log('Yur extension "ext-learn1" is now active!');
+	console.log('Yur extension is now active!');
 	// The command has been defined in the package.json file
 	// Now provide the implementation of the command with  registerCommand
 	// The commandId parameter must match the command field in package.json
@@ -118,7 +118,7 @@ function activate(context) {
                 }
             };
             console.log('Auto-completes:', autoCompletes.length);
-			console.log('Accepted/Rejected counts-TAKE0:', acceptCnt, rejectCnt);
+			console.log(`Accepted/Rejected counts, ${acceptCnt} / ${rejectCnt}`);
             panel.webview.html = getWebviewContent(config);
         }).catch(err => {console.error('Error reading file:', err)});
     // Display a message box to the user
