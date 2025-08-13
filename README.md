@@ -61,7 +61,9 @@ https://github.com/user-attachments/assets/c5508224-bd8e-4ba4-b414-247032a1903f
 
 Note the latest version contains additional plots
 than those shown in the rendered dashboard in the
-install demo video.
+install demo video. Here is a screenshot of the default
+view of the rendered dashboard.
+`
 
 ## Release Notes
 
