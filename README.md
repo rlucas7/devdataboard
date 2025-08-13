@@ -10,7 +10,9 @@ important software metrics using AI tools with `Continue.dev`.
 Accepted Autocompletions rate:
  - The autocompletions from the continue extesion are
    tracked and rendered in the dashboard.
-
+ - The length of accepted/rejected autocompletions are
+   tracked and rendered in two distinct plots in the
+   dashboard.
 
 ## Requirements
 
@@ -69,6 +71,7 @@ This is development toward a `0.1.0` version.
 ### 0.1.0
 
 - Accepted/rejected count of autocompletes.
+- Accepted/rejected lengths over time are plotted in two panels
 
 ## For more information
 
