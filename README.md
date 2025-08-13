@@ -63,7 +63,8 @@ Note the latest version contains additional plots
 than those shown in the rendered dashboard in the
 install demo video. Here is a screenshot of the default
 view of the rendered dashboard.
-`
+
+<img width="693" height="1094" alt="Screenshot 2025-08-13 at 7 31 26 PM" src="https://github.com/user-attachments/assets/c9fbc0f8-07aa-45a0-bc7b-de6db38b8a7f" />
 
 ## Release Notes
 
