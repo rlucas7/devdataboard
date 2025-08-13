@@ -47,7 +47,7 @@ To install the tip of `MAIN` navigate to the top level directory
 you have cloned from git remote. Then do:
 
 ```bash
-vsce package 
+vsce package
 ```
 now you should see a file called
 
@@ -55,13 +55,9 @@ now you should see a file called
 where the version number inside the `<>` corresponds to your local
 setting in package.json.
 
-The installation can now proceed as shown in the video 
+The installation can now proceed as shown
 
-
-
-https://github.com/user-attachments/assets/c5508224-bd8e-4ba4-b414-247032a1903f
-
-
+[Install Demo](install_video.mov)
 
 ## Release Notes
 
