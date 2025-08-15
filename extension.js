@@ -47,22 +47,68 @@ var getWebviewContent = function(barChartConfig, tsAcceptChartConfig, tsRejectCh
     </html>`
 };
 
+// copy pasta from https://www.chartjs.org/docs/latest/getting-started/usage.html#plugins
+const chartAreaBorder = {
+    id: 'chartAreaBorder',
+
+    beforeDraw(chart, args, options) {
+      const { ctx, chartArea: { left, top, width, height } } = chart;
+
+      ctx.save();
+      ctx.strokeStyle = options.borderColor;
+      ctx.lineWidth = options.borderWidth;
+      ctx.setLineDash(options.borderDash || []);
+      ctx.lineDashOffset = options.borderDashOffset;
+      ctx.strokeRect(left, top, width, height);
+      ctx.restore();
+    }
+  };
+
+
+// plugin to draw vertical lines on time series chart
+const verticalLinePlugin = {
+    id: 'verticalLinePlugin',
+    beforeDatasetsDraw: function(chart) { 
+        const {ctx, chartArea: {top, bottom, height}} = chart;
+        ctx.save()
+        console.log(chart.scales['x']);
+        // Get the maximum x-value across all datasets
+        var maxXValue = Math.max(...chart.data.datasets.flatMap(dataset => dataset.data.map(point => point.x)));
+        console.log('Max X Value:', maxXValue);
+        // Get the x position for the maximum x-value
+        var xPos = xScale.getPixelForValue(new Date(maxXValue));
+        // chart.getDatasetMeta(0).data[10].x <- doesn't work
+        // draw vertical line
+        ctx.beginPath();
+        ctx.moveTo(xPos, top);
+        ctx.strokeStyle = 'blue';
+        ctx.lineTo(xPos, bottom);
+        ctx.stroke();
+        ctx.restore();
+    },
+}
+
 /**
  * @param {vscode.ExtensionContext} context
  */
 function activate(context) {
-
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Yur extension is now active!');
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with  registerCommand
-	// The commandId parameter must match the command field in package.json
+    /* */
     let acceptCnt = 0;
     let rejectCnt = 0;
 	const disposable = vscode.commands.registerCommand('devdatadash.dashboard', function () {
 		// Read the dev_data file using vscode.workspace.fs
         const HOME = process.env.HOME || process.env.USERPROFILE; // For cross-platform compatibility
+        // get the last touch time of the config file
+        const configYamlFilePath = posix.join(HOME, '.continue', 'config.yaml');
+        vscode.workspace.fs.stat(vscode.Uri.file(configYamlFilePath)).then(stat => {
+            const dateObject = new Date(stat.mtime);
+            console.log('Config file mtime:', dateObject);
+            console.log('Config file last modified at:', stat.mtime);
+            console.log('Config file size:', stat.size, 'bytes');
+            console.log('Config file ctime:', stat.ctime);
+        }).catch(err => {
+            console.error('Error accessing config file:', err);
+        });
         // Construct the path to the file
         const uri = vscode.Uri.file(`${HOME}/.continue/dev_data/0.2.0/autocomplete.jsonl`); // Absolute path to the file
         console.log('Reading file at:', uri.fsPath);
@@ -166,9 +212,11 @@ function activate(context) {
             const tsAConfig = {
               type: 'line',
               data: tsAcceptData,
+              plugins: [chartAreaBorder],
               options: {
                 responsive: true,
-                plugins: {
+                plugins: 
+                {
                   legend: {
                     position: 'top',
                   },
@@ -212,4 +260,3 @@ module.exports = {
 	activate,
 	deactivate
 }
-
