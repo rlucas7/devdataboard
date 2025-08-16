@@ -5,6 +5,60 @@ const posix = require('path').posix;
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 
+// Plugin to add a line to the chart area
+const customLines = {
+  id: "customLines",
+  afterDraw: chart => {
+    const lines = chart.config.options.plugins.customLines
+
+    lines?.forEach(options => {
+      let line = options.line
+
+      if (options.hidden || isNaN(line) || options.cancel?.(chart, line))
+        return
+
+      const xID = options.xAxisID || "x"
+      const yID = options.yAxisID || "y"
+      const xAxis = chart.scales[xID]
+      const yAxis = chart.scales[yID]
+
+      let xStart, yStart, xEnd, yEnd
+
+      // Vertical
+      if (options.direction == "vertical") {
+        if (line < xAxis.min || line > xAxis.max)
+          return
+
+        yStart = options.yStart?.(chart, xAxis, yAxis) || yAxis.top
+        yEnd = options.yEnd?.(chart, xAxis, yAxis) || yAxis.bottom
+
+        line = (line - xAxis.min) / (xAxis.max - xAxis.min)
+        line = (line * xAxis.width) + xAxis.left
+        xStart = xEnd = line
+      }
+      // Horizontal
+      else {
+        if (line < yAxis.min || line > yAxis.max)
+          return
+
+        xStart = options.xStart?.(chart, xAxis, yAxis) || xAxis.left
+        xEnd = options.xEnd?.(chart, xAxis, yAxis) || xAxis.right
+
+        line = (line - yAxis.min) / (yAxis.max - yAxis.min)
+        line = yAxis.height - (line * yAxis.height) + yAxis.top
+        yStart = yEnd = line
+      }
+
+      const ctx = chart.ctx
+      ctx.strokeStyle = options.color || "#FF0000"
+      ctx.beginPath()
+      ctx.moveTo(xStart, yStart)
+      ctx.lineTo(xEnd, yEnd)
+      ctx.stroke()
+    })
+  }
+}
+
 // some helper function
 var getWebviewContent = function(barChartConfig, tsAcceptChartConfig, tsRejectChartConfig) {
     return `<!DOCTYPE html>
@@ -28,16 +82,30 @@ var getWebviewContent = function(barChartConfig, tsAcceptChartConfig, tsRejectCh
             <canvas id="rejected-timeplot"></canvas>
         </div>
         <script>
+            // Add the plugin to Chart.js
+            // Chart.register(customLines)
             // Bar Chart
             const barChart = new Chart(
                 document.getElementById('barchart').getContext('2d'),
                 ${JSON.stringify(barChartConfig)}
             );
             // Time Plots
-            const AcceptedTimeChart = new Chart(
+            let AcceptedTimeChart = new Chart(
                 document.getElementById('accepted-timeplot'),
                 ${JSON.stringify(tsAcceptChartConfig)}
             );
+            // Add a plugin to draw line in the chart area
+            AcceptedTimeChart.options.plugins.customLines = [{
+                direction: "vertical",
+                line: AcceptedTimeChart.data.datasets[0].data[5].x, // Use the first data point's x value
+                xAxisID: "x",
+                yAxisID: "y",
+                yStart: (chart, xAxis, yAxis) => yAxis.bottom,
+                yEnd: (chart, xAxis, yAxis) => chart.height,
+                color: "#00FF0080",
+                hidden: false,
+                cancel: (chart, line) => false
+            }]
             const RejectedTimeChart = new Chart(
                 document.getElementById('rejected-timeplot'),
                 ${JSON.stringify(tsRejectChartConfig)}
@@ -47,46 +115,6 @@ var getWebviewContent = function(barChartConfig, tsAcceptChartConfig, tsRejectCh
     </html>`
 };
 
-// copy pasta from https://www.chartjs.org/docs/latest/getting-started/usage.html#plugins
-const chartAreaBorder = {
-    id: 'chartAreaBorder',
-
-    beforeDraw(chart, args, options) {
-      const { ctx, chartArea: { left, top, width, height } } = chart;
-
-      ctx.save();
-      ctx.strokeStyle = options.borderColor;
-      ctx.lineWidth = options.borderWidth;
-      ctx.setLineDash(options.borderDash || []);
-      ctx.lineDashOffset = options.borderDashOffset;
-      ctx.strokeRect(left, top, width, height);
-      ctx.restore();
-    }
-  };
-
-
-// plugin to draw vertical lines on time series chart
-const verticalLinePlugin = {
-    id: 'verticalLinePlugin',
-    beforeDatasetsDraw: function(chart) { 
-        const {ctx, chartArea: {top, bottom, height}} = chart;
-        ctx.save()
-        console.log(chart.scales['x']);
-        // Get the maximum x-value across all datasets
-        var maxXValue = Math.max(...chart.data.datasets.flatMap(dataset => dataset.data.map(point => point.x)));
-        console.log('Max X Value:', maxXValue);
-        // Get the x position for the maximum x-value
-        var xPos = xScale.getPixelForValue(new Date(maxXValue));
-        // chart.getDatasetMeta(0).data[10].x <- doesn't work
-        // draw vertical line
-        ctx.beginPath();
-        ctx.moveTo(xPos, top);
-        ctx.strokeStyle = 'blue';
-        ctx.lineTo(xPos, bottom);
-        ctx.stroke();
-        ctx.restore();
-    },
-}
 
 /**
  * @param {vscode.ExtensionContext} context
@@ -212,7 +240,7 @@ function activate(context) {
             const tsAConfig = {
               type: 'line',
               data: tsAcceptData,
-              plugins: [chartAreaBorder],
+              plugins: [customLines],
               options: {
                 responsive: true,
                 plugins: 
