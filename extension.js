@@ -7,7 +7,7 @@ const path = require('path');
 // Your extension is activated the very first time the command is executed
 
 // some helper function
-var getWebviewContent = function(barChartConfig, tsAcceptChartConfig, tsRejectChartConfig, scriptUri) {
+var getWebviewContent = function(barChartConfig, tsAcceptChartConfig, tsRejectChartConfig) {
     return `<!DOCTYPE html>
     <html lang="en">
     <head>
@@ -103,11 +103,6 @@ function activate(context) {
                     enableScripts: true // Allow scripts in the webview, not allowed by default ...
                 }
             );
-            const libraryPath = vscode.Uri.file(
-                path.join(context.extensionUri.fsPath, 'node_modules', 'chart.js', 'dist', 'index.d.ts')
-            );
-            const scriptUri = panel.webview.asWebviewUri(libraryPath);
-            console.log('Script URI:', scriptUri.toString());
             const config = {
                 type: 'bar',
                 data: {
