@@ -2,72 +2,19 @@
 // Import the module and reference it with the alias vscode in your code below
 const vscode = require('vscode');
 const posix = require('path').posix;
+const path = require('path');
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 
-// Plugin to add a line to the chart area
-const customLines = {
-  id: "customLines",
-  afterDraw: chart => {
-    const lines = chart.config.options.plugins.customLines
-
-    lines?.forEach(options => {
-      let line = options.line
-
-      if (options.hidden || isNaN(line) || options.cancel?.(chart, line))
-        return
-
-      const xID = options.xAxisID || "x"
-      const yID = options.yAxisID || "y"
-      const xAxis = chart.scales[xID]
-      const yAxis = chart.scales[yID]
-
-      let xStart, yStart, xEnd, yEnd
-
-      // Vertical
-      if (options.direction == "vertical") {
-        if (line < xAxis.min || line > xAxis.max)
-          return
-
-        yStart = options.yStart?.(chart, xAxis, yAxis) || yAxis.top
-        yEnd = options.yEnd?.(chart, xAxis, yAxis) || yAxis.bottom
-
-        line = (line - xAxis.min) / (xAxis.max - xAxis.min)
-        line = (line * xAxis.width) + xAxis.left
-        xStart = xEnd = line
-      }
-      // Horizontal
-      else {
-        if (line < yAxis.min || line > yAxis.max)
-          return
-
-        xStart = options.xStart?.(chart, xAxis, yAxis) || xAxis.left
-        xEnd = options.xEnd?.(chart, xAxis, yAxis) || xAxis.right
-
-        line = (line - yAxis.min) / (yAxis.max - yAxis.min)
-        line = yAxis.height - (line * yAxis.height) + yAxis.top
-        yStart = yEnd = line
-      }
-
-      const ctx = chart.ctx
-      ctx.strokeStyle = options.color || "#FF0000"
-      ctx.beginPath()
-      ctx.moveTo(xStart, yStart)
-      ctx.lineTo(xEnd, yEnd)
-      ctx.stroke()
-    })
-  }
-}
-
 // some helper function
-var getWebviewContent = function(barChartConfig, tsAcceptChartConfig, tsRejectChartConfig) {
+var getWebviewContent = function(barChartConfig, tsAcceptChartConfig, tsRejectChartConfig, scriptUri) {
     return `<!DOCTYPE html>
     <html lang="en">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Bar Chart</title>
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src ="${scriptUri}"></script>
     </head>
     <body>
         <h1>Dev Data Dashboard</h1>
@@ -82,8 +29,6 @@ var getWebviewContent = function(barChartConfig, tsAcceptChartConfig, tsRejectCh
             <canvas id="rejected-timeplot"></canvas>
         </div>
         <script>
-            // Add the plugin to Chart.js
-            // Chart.register(customLines)
             // Bar Chart
             const barChart = new Chart(
                 document.getElementById('barchart').getContext('2d'),
@@ -94,18 +39,6 @@ var getWebviewContent = function(barChartConfig, tsAcceptChartConfig, tsRejectCh
                 document.getElementById('accepted-timeplot'),
                 ${JSON.stringify(tsAcceptChartConfig)}
             );
-            // Add a plugin to draw line in the chart area
-            AcceptedTimeChart.options.plugins.customLines = [{
-                direction: "vertical",
-                line: AcceptedTimeChart.data.datasets[0].data[5].x, // Use the first data point's x value
-                xAxisID: "x",
-                yAxisID: "y",
-                yStart: (chart, xAxis, yAxis) => yAxis.bottom,
-                yEnd: (chart, xAxis, yAxis) => chart.height,
-                color: "#00FF0080",
-                hidden: false,
-                cancel: (chart, line) => false
-            }]
             const RejectedTimeChart = new Chart(
                 document.getElementById('rejected-timeplot'),
                 ${JSON.stringify(tsRejectChartConfig)}
@@ -170,6 +103,11 @@ function activate(context) {
                     enableScripts: true // Allow scripts in the webview, not allowed by default ...
                 }
             );
+            const libraryPath = vscode.Uri.file(
+                path.join(context.extensionUri.fsPath, 'node_modules', 'chart.js', 'dist', 'index.d.ts')
+            );
+            const scriptUri = panel.webview.asWebviewUri(libraryPath);
+            console.log('Script URI:', scriptUri.toString());
             const config = {
                 type: 'bar',
                 data: {
@@ -214,6 +152,22 @@ function activate(context) {
                     }
                 }
             };
+            // Create a custom plugin to draw a vertical line at the 5th data point
+            // Plugin to add a line to the chart area
+            const logNote = {
+                id: 'logNote',
+                beforeDatasetsDraw: (chart, args, plugins ) => {
+                    console.log('beforeDatasetsDraw called');
+                    console.log('chart', chart);
+                    console.log('args', args);
+                    console.log('plugins', plugins);
+                    console.log('chart');
+                    console.ingo('chart');
+                    console.debug('chart');
+                    console.warn('chart');
+                    console.error('chart');
+                }
+            };
             // Time series plot of accepted auto-completes over time
             let acceptedCompletes = autoCompletes.filter(ac => ac.accepted);
             let acceptedPlotData = acceptedCompletes.map(ac => ({x: ac.timestamp, y: ac.completion.length}));
@@ -240,7 +194,7 @@ function activate(context) {
             const tsAConfig = {
               type: 'line',
               data: tsAcceptData,
-              plugins: [customLines],
+              plugins: [logNote],
               options: {
                 responsive: true,
                 plugins: 
@@ -251,9 +205,12 @@ function activate(context) {
                   title: {
                     display: true,
                     text: 'Time Series'
-                  }
-                }
-              },
+                  },
+                  logNote: {
+                    message: 'This is a custom plugin to log the chart object',
+                  },
+                },
+              }
             };
             const tsRConfig = {
               type: 'line',
@@ -273,7 +230,7 @@ function activate(context) {
             };
             console.log('Auto-completes:', autoCompletes.length);
 			console.log(`Accepted/Rejected counts, ${acceptCnt} / ${rejectCnt}`);
-            panel.webview.html = getWebviewContent(config, tsAConfig, tsRConfig);
+            panel.webview.html = getWebviewContent(config, tsAConfig, tsRConfig, scriptUri);
         }).catch(err => {console.error('Error reading file:', err)});
     // Display a message box to the user
 	vscode.window.showInformationMessage('Rendering Dev Data Dashboard!');
