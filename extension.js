@@ -157,7 +157,7 @@ function activate(context) {
                     console.log('args', args);
                     console.log('plugins', plugins);
                     console.log('chart');
-                    console.ingo('chart');
+                    console.info('chart');
                     console.debug('chart');
                     console.warn('chart');
                     console.error('chart');
