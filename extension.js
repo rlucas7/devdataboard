@@ -2,7 +2,6 @@
 // Import the module and reference it with the alias vscode in your code below
 const vscode = require('vscode');
 const posix = require('path').posix;
-const path = require('path');
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 
@@ -225,7 +224,7 @@ function activate(context) {
             };
             console.log('Auto-completes:', autoCompletes.length);
 			console.log(`Accepted/Rejected counts, ${acceptCnt} / ${rejectCnt}`);
-            panel.webview.html = getWebviewContent(config, tsAConfig, tsRConfig, scriptUri);
+            panel.webview.html = getWebviewContent(config, tsAConfig, tsRConfig);
         }).catch(err => {console.error('Error reading file:', err)});
     // Display a message box to the user
 	vscode.window.showInformationMessage('Rendering Dev Data Dashboard!');
