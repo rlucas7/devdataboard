@@ -1,6 +1,6 @@
 # Dev Data Dashboard README
 
-This is the README for the extension "Dev Data Dashboard".
+This is the README for the VSCode extension "Dev Data Dashboard".
 
 The intent of this extension is to allow monitoring and visualizing
 important software metrics using AI tools with `Continue.dev`.
@@ -18,6 +18,21 @@ Accepted Autocompletions rate:
 
 See `package.json` for runtime dependency and dev-dependency info.
 
+## Development Installation
+
+```bash
+git clone https://github.com/rlucas7/devdataboard.git
+cd devdataboard
+npm install
+```
+
+For a debug build of the extension from vscode, run the command Debug: Start Debugging from the Command Palette (⇧⌘P). 
+This will open a new VSCode editor and allow you to execute the extension command in the debug VSCode IDE. 
+
+## Issues 
+
+Please open an issue on the repo, or open a pull request against the repo documenting the issue and how the PR fixes the change.
+
 ## Extension Settings
 
 So far there are so changes to VS Code settings through the
@@ -28,8 +43,9 @@ For example:
 
 This extension contributes the following settings:
 
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
+* `"Dev Data Dashboard"`: The command that runs the extension.
+
+Note this extension depends on the continue extension
 
 ## Known Issues
 
